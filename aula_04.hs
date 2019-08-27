@@ -41,4 +41,28 @@ find (No x ae ad) y = if x == y
  then True
  else (find ae y) || (find ad y)
 
+--insere item na arvore de busca binaria
+insereNo y Vazia = singleton y
+insereNo y (No x ae ad)
+ | x == y = No x ae ad
+ | y < x = No x (insereNo y ae) ad
+ | y > x = No x ae (insereNo y ad)
 
+--remove um no da arvore
+--removeNo _ Vazia = Vazia
+--removeNo y (No x ae ad)
+-- | x == y =
+
+--conta nos da arvore
+contaNos Vazia = 0
+contaNos (No x Vazia ad) = 1 + (contaNos ad)
+contaNos (No x ae Vazia) = 1 + (contaNos ae)
+contaNos (No x ae ad) = 1 + (contaNos ae) + (contaNos ad)
+
+--profundidade da arvore
+profundidade Vazia = 0
+profundidade (No x Vazia ad) = 1 + (profundidade ad)
+profundidade (No x ae Vazia) = 1 + (profundidade ae)
+profundidade (No x ae ad)
+ | (profundidade ae) > (profundidade ad) = 1 + profundidade ae
+ | otherwise = 1+ profundidade ad
