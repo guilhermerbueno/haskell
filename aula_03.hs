@@ -46,7 +46,7 @@ contains x (a:as) = x == a || contains x as
 --posicoes do elemento
 posicoes :: Eq a => Num x => a -> [a] -> [x]
 posicoes _ [] = []
-posicoes x (a:as) = posicoes' x (a:as) 1
+posicoes x (a:as) = posicoes' x (a:as) 0
 posicoes' _ [] _ = []
 posicoes' x (a:as) pos
  | x == a = [pos] ++ posicoes' x as (pos+1)

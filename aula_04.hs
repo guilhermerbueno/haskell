@@ -66,3 +66,11 @@ profundidade (No x ae Vazia) = 1 + (profundidade ae)
 profundidade (No x ae ad)
  | (profundidade ae) > (profundidade ad) = 1 + profundidade ae
  | otherwise = 1+ profundidade ad
+
+--converte arvore de busca binaria em lista
+transformaEmLista Vazia = []
+transformaEmLista (No x Vazia Vazia) = [x]
+transformaEmLista (No x Vazia ad) = [x]++transformaEmLista ad
+transformaEmLista (No x ae Vazia) = (transformaEmLista ae) ++ [x]
+transformaEmLista (No x ae ad) = (transformaEmLista ae)++[x]++(transformaEmLista ad)
+
