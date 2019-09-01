@@ -20,3 +20,17 @@ filter' p (x:xs)
  | otherwise = filter' p xs
 
 impar x = x `mod` 2 == 1
+
+--fold
+soma [] = 0
+soma (x:xs) = x + (soma xs)
+
+
+--representing a matrix
+m = [[1,2,3],[4,5,6],[7,8,9],[0,0,-1]]
+
+--transpose a matrix
+transpose ([]:_) = []
+transpose l = (map head l) : transpose (map tail l) 
+
+

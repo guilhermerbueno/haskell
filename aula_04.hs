@@ -1,3 +1,8 @@
+instance Show (a -> b) where
+   show f = "Unicorns!!"
+
+data Type a = T a deriving Show
+
 --criando tipos
 data Ponto = Ponto Float Float deriving (Eq, Show, Read)
 data Figura = Circulo Ponto Float | Retangulo Ponto Ponto
@@ -74,3 +79,22 @@ transformaEmLista (No x Vazia ad) = [x]++transformaEmLista ad
 transformaEmLista (No x ae Vazia) = (transformaEmLista ae) ++ [x]
 transformaEmLista (No x ae ad) = (transformaEmLista ae)++[x]++(transformaEmLista ad)
 
+--converte abb em lista prefixa
+transformaEmPrefixa Vazia = []
+transformaEmPrefixa (No x Vazia Vazia) = [x]
+transformaEmPrefixa (No x Vazia ad) = [x]++(transformaEmPrefixa ad)
+transformaEmPrefixa (No x ae Vazia) = [x]++(transformaEmPrefixa ae)
+transformaEmPrefixa (No x ae ad) = [x]++(transformaEmPrefixa ae)++(transformaEmPrefixa ad)
+
+data Tree2 ch v = Vazia2 | No2 ch v (Tree2 ch v) (Tree2 ch v) deriving Show
+
+singleton2 ch v = No2 ch v Vazia2 Vazia2
+
+t2 = No2 10 "h" (No2 5 "e" (No2 3 "a" Vazia2 Vazia2) (No2 8 "k" Vazia2 Vazia2)) (No2 15 "m" (No2 12 "s" Vazia2 Vazia2) (No2 18 "o" Vazia2 Vazia2))
+--insere chave valor
+insereAbb ch v Vazia2 = singleton2 ch v
+insereAbb ch v (No2 chExists vExists ae ad)
+ | ch == chExists = No2 ch v ae ad
+ | ch < chExists = No2 chExists vExists (insereAbb ch v ae) ad
+ | ch > chExists = No2 chExists vExists ae (insereAbb ch v ad)
+ 
