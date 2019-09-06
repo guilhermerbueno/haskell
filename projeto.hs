@@ -1,11 +1,6 @@
---1. Ler o arquivo
---1.1 Salvar os pontos e suas coordenadas (até encontrar linha em branco). Ex.: pontos = [('a',[x1,x2,x3]),('b',[y1,y2,3]),('c',[z1,z2,z3],...)
---1.2 Ler os pontos rotulados. Ex: [('a',1),('b',3),...,('p',1)]
---1.3 Separar os pontos não rotulados dos pontos rotulados
---2. Calcular a distancia euclidiana entre um ponto e uma lista de pontos (usar applicative pode ser uma boa ideia), esse metodo retornar o ponto mais proximo. Ex: distanciaEuclidiana p pontos
---2.1 atualizar a lista de pontos rotulados com o ponto mais proximo encontrado acima
 import System.IO
 import Data.Char
+import Data.List
 
 --1.3 - dada uma lista de pontos, verifica e retorna somente aqueles que pertencem a lista de pontos com rotulos (ou os que nao pertencem)
 pontosRotulados pts rotulos = filter (\pt -> (fst pt) `elem` (map fst rotulos)) pts
@@ -22,6 +17,18 @@ converterParaNum (a,b) = (a, map fromInteger ([read c::Integer | c <-b]))
 
 --recebe a distancia calculada, a label do ponto que ja pertence a uma classe e a label do ponto que desejamos rotular
 rotulaPonto (dist, rotulado, rotular) rotulos = (rotular, snd (head (filter (\rot -> fst rot == rotulado) rotulos)))
+
+atualizarRotulacao rotulados naoRotulados (dist, rotulado, rotular) = ((filter (\pt -> fst pt == rotular) naoRotulados)++rotulados, (filter (\rot -> fst rot /= rotular) naoRotulados))
+
+--processamento::[([Char], [a])] -> [([Char], [a])] -> [([[Char]], [Char])] -> [([Char], [a])] -> IO ([([Char], [a])])
+processamento rotulados [] rotulos = rotulos
+processamento rotulados naoRotulados rotulos = processamento novosRotulados novosNaoRotulados novosRotulos
+  where
+     --calcula a distancia de todos os pontos rotulados para os que ainda nao estao rotulados e retorna uma lista de [(dist, labelRotulado, labelARotular)]
+     distancias = distanciaEuclidiana <$> rotulados <*> naoRotulados
+     distanciaMinima = minimum distancias
+     novosRotulos = (rotulaPonto distanciaMinima rotulos):rotulos
+     (novosRotulados, novosNaoRotulados) = atualizarRotulacao rotulados naoRotulados distanciaMinima
 
 adicionaSaida rot rotulos = [(b, [a]:(fst rot)) | (a,b) <- rotulos, b == (snd rot)]
 
@@ -44,16 +51,13 @@ processFile f =
      naoRotuladosNum = (map converterParaNum naoRotulados)
      rotuladosNum = (map converterParaNum rotulados)
      
-     --calcula a distancia de todos os pontos rotulados para os que ainda nao estao rotulados e retorna uma lista de [(dist, labelRotulado, labelARotular)]
-     distancias = distanciaEuclidiana <$> rotuladosNum <*> naoRotuladosNum
-     distanciaMinima = minimum distancias
-     rotulos2 = (rotulaPonto distanciaMinima rotulos):rotulos
-
-     saida = inverterTuplas (formataSaida [([a],b) | (a,b) <- rotulos2] [])
+     resultado = processamento rotuladosNum naoRotuladosNum rotulos
+     
+     saida = sort (inverterTuplas (formataSaida [([a],b) | (a,b) <- resultado] []))
  in saida
 
 main = do
  file <- getContents
- let saida = processFile file
- --print (unlines [a ++ " " ++ unwords b | (a,b) <- saida])
+ let saida = (processFile file)
+ print (unlines [a ++ " " ++ unwords b | (a,b) <- saida])
  writeFile "output.txt" (unlines [a ++ " " ++ unwords b | (a,b) <- saida])
